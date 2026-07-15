@@ -72,40 +72,66 @@ function renderSection1() {
   const { section1, event } = content;
   const sp = section1.speaker;
   return el(`
-    <header class="hero" aria-label="Além dos Plantões — aula ao vivo para médicos">
-      <div class="hero-grid">
+    <header class="hero bg-v4-ink" aria-label="Além dos Plantões — aula ao vivo para médicos">
 
-        <!-- PAINEL DE TEXTO -->
-        <div class="hero-panel px-6 sm:px-8 lg:px-12 xl:px-16 pt-11 pb-10 lg:py-16">
-          <p class="no-defer hero-eyebrow mb-5">Aula ao vivo e gratuita · ${event.audienceLabel}</p>
+      <!-- Faixa de topo: identifica o público antes de qualquer coisa -->
+      <div class="no-defer relative z-20 px-5 sm:px-8 lg:px-12 xl:px-16 pt-4 pb-3 md:pt-6">
+        <p class="hero-eyebrow !text-[10px] md:!text-[11px]">${event.audienceLabel}</p>
+      </div>
 
-          <h1 class="no-defer font-display font-semibold text-v4-text mb-4 md:mb-5"
-            style="font-size:clamp(33px,7.4vw,52px);line-height:1.08;letter-spacing:-0.02em;">
+      <!-- FOTO MOBILE — min-h 260px deixa encolher no iPhone SE (320x568) -->
+      <div class="md:hidden relative w-full h-[45vh] min-h-[260px] overflow-hidden">
+        <picture>
+          <source srcset="${sp.heroPhotoMobile}.webp" type="image/webp" />
+          <img src="${sp.heroPhotoMobile}.jpg" fetchpriority="high" decoding="async"
+            class="w-full h-full object-cover object-top"
+            alt="${sp.name}, especialista em restauração capilar" />
+        </picture>
+        <!-- Sombra só na faixa final (blend com o painel) — não cobre mais o rosto -->
+        <div class="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-v4-ink to-transparent pointer-events-none"></div>
+
+        <!-- Headline ocupa a faixa vazia à esquerda da foto (sem invadir o rosto), letra maior -->
+        <h1 class="no-defer absolute inset-y-0 left-0 z-10 flex items-center
+          font-display font-bold text-v4-text pl-5 pr-2"
+          style="font-size:clamp(24px,7.6vw,32px);line-height:1.08;letter-spacing:-0.015em;max-width:48%;text-shadow:0 2px 14px rgba(0,0,0,.65);">
+          ${section1.headline.split("\n").join("<br />")}
+        </h1>
+      </div>
+
+      <div class="hero-grid max-w-[1440px] mx-auto relative">
+
+        <!-- PAINEL DE TEXTO — no mobile o h1 já está sobre a foto, então o
+             painel só respira normalmente a partir daqui (sem overlap). -->
+        <div class="hero-panel px-5 sm:px-8 lg:px-12 xl:px-16 pt-7 pb-10 md:pt-6 md:pb-10 lg:pt-8 lg:pb-16 relative z-20">
+          <h1 class="no-defer hidden md:block font-display font-semibold text-v4-text mb-3 md:mb-5"
+            style="font-size:clamp(26px,7vw,52px);line-height:1.08;letter-spacing:-0.02em;">
             ${section1.headline.split("\n").join("<br />")}
           </h1>
 
-          <p class="no-defer font-display text-[15px] sm:text-[17px] lg:text-[20px] leading-[1.4] text-v4-muted mb-6 max-w-lg">
+          <p class="no-defer font-display text-[16px] sm:text-[17px] lg:text-[20px] leading-[1.4] text-v4-muted mb-6 max-w-lg">
             ${section1.subtitle} <span class="text-gold">${section1.subtitleAccent}</span>
           </p>
 
           <p class="no-defer hidden lg:block text-v4-muted text-[15px] leading-relaxed mb-7 max-w-lg">${section1.subheadline}</p>
 
-          <div class="no-defer hero-meta mb-7">
-            <span class="hero-meta-item">${icon("calendar", "w-[18px] h-[18px]")}<span>${event.dateLong} · ${event.time}</span></span>
+          <div class="no-defer hero-meta mb-6">
+            <span class="hero-meta-item">${icon("calendar", "w-[16px] h-[16px]")}<span class="text-[13px] md:text-sm">${event.dateLong} · ${event.time}</span></span>
             <span class="hero-meta-sep hidden sm:block"></span>
-            <span class="hero-meta-item">${icon("screen", "w-[18px] h-[18px]")}<span>${event.format}</span></span>
+            <span class="hero-meta-item">${icon("screen", "w-[16px] h-[16px]")}<span class="text-[13px] md:text-sm">${event.format}</span></span>
           </div>
+
+          <!-- Countdown mobile: compacto, ID próprio (o JS varre [data-countdown]) -->
+          <div class="no-defer mb-6 md:hidden">${countdown("cd-hero-mob", true)}</div>
 
           <div class="no-defer flex flex-col items-stretch sm:items-start">
-            ${ctaButton(section1.ctaText, "w-full sm:w-auto")}
-            ${trustLine("text-v4-muted")}
+            ${ctaButton(section1.ctaText, "w-full sm:w-auto !py-4 !text-[14px] md:!text-[15px]")}
+            ${trustLine("text-v4-muted !mt-3")}
           </div>
 
-          <div class="no-defer mt-8">${countdown("cd-hero", false)}</div>
+          <div class="no-defer mt-8 hidden md:block">${countdown("cd-hero-desk", false)}</div>
         </div>
 
-        <!-- FOTO (tablet/desktop — no mobile ela reaparece mais abaixo, depois
-             da Tela 3, ver renderMobileDoctorReveal) -->
+        <!-- FOTO (tablet/desktop) -->
         <div class="hero-media hidden md:block">
           <picture>
             <source media="(max-width: 1279px)" srcset="${sp.heroPhotoMobile}.webp" type="image/webp" />
@@ -124,31 +150,6 @@ function renderSection1() {
         </div>
       </div>
     </header>
-  `);
-}
-
-/* ---------- Foto do Dr. Iago — reaparece só no mobile, depois da Tela 3
-   (empilhado: texto do herói > Tela 2 > Tela 3 > foto > Tela 4). No
-   tablet/desktop a foto já está no herói (ver hero-media acima). ---------- */
-function renderMobileDoctorReveal() {
-  const { section1 } = content;
-  const sp = section1.speaker;
-  return el(`
-    <div class="md:hidden relative bg-v4-ink">
-      <picture>
-        <source srcset="${sp.heroPhotoMobile}.webp" type="image/webp" />
-        <source srcset="${sp.heroPhotoMobile}.jpg" type="image/jpeg" />
-        <img src="${sp.heroPhotoMobile}.jpg" loading="lazy" decoding="async" class="block w-full h-auto"
-          alt="${sp.name}, especialista em restauração capilar, retratado no consultório e em cirurgia de transplante capilar" />
-      </picture>
-      <div class="hero-nameplate">
-        <span class="w-2 h-2 rounded-full bg-v4-gold shrink-0"></span>
-        <div>
-          <p class="font-display font-semibold text-v4-text text-sm leading-none">${sp.name}</p>
-          <p class="text-[11px] text-v4-gold mt-1 tracking-wide">${sp.credentials}</p>
-        </div>
-      </div>
-    </div>
   `);
 }
 
@@ -413,7 +414,6 @@ root.append(
   renderSection2(),
   bridge("bridge-to-ink"),
   renderSection3(),
-  renderMobileDoctorReveal(),
   bridge("bridge-dawn"),
   renderSection4(),
   renderAudienceFit(),

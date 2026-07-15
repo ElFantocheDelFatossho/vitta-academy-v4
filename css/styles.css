@@ -1,0 +1,316 @@
+:root {
+  /* Paleta calibrada por amostragem de pixel da foto de referência do
+     Dr. Iago (terno + cirurgia, dupla exposição azul-marinho). */
+  --v4-ink: #070C16;
+  --v4-ink-2: #0C1220;
+  --v4-ink-3: #121A2C;
+  --v4-plum: #0A121F;
+  --v4-glow-blue: #2E3F63;
+  --v4-text: #EDEFF4;
+  --v4-text-muted: #9CA8BA;
+  --v4-gold: #C9A667;
+  --v4-gold-soft: #E4D2A8;
+  --v4-mint: #8CE9C4;
+  --v4-paper: #F6F7F9;
+  --v4-navy: #0F172A;
+  --v4-navy-2: #1E293B;
+  --v4-paper-muted: #5B6675;
+  --v4-green: #25D366;
+  --v4-green-hover: #1FBF5C;
+}
+
+* {
+  scroll-behavior: smooth;
+}
+
+html.lenis, html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+body {
+  background: var(--v4-ink);
+  font-family: "Inter", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-display {
+  font-family: "Fraunces", Georgia, serif;
+  font-optical-sizing: auto;
+  letter-spacing: -0.015em;
+}
+
+/* Grão sutil sobre as seções escuras — profundidade premium sem gradiente
+   pesado. Gerado inline (feTurbulence) para não depender de imagem. */
+.grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Pontes de gradiente entre seções — nada de corte seco, mas finas: a seção
+   em si já respira com seu próprio padding, a ponte só costura a cor. */
+.bridge-to-plum { background: linear-gradient(180deg, var(--v4-ink) 0%, var(--v4-plum) 100%); height: 40px; }
+.bridge-to-ink { background: linear-gradient(180deg, var(--v4-plum) 0%, var(--v4-ink) 100%); height: 36px; }
+.bridge-dawn { background: linear-gradient(180deg, var(--v4-ink) 0%, #2A3242 45%, #A9B4C4 78%, var(--v4-paper) 100%); height: 56px; }
+.bridge-to-navy { background: linear-gradient(180deg, var(--v4-paper) 0%, var(--v4-navy) 100%); height: 48px; }
+@media (min-width: 768px) {
+  .bridge-to-plum, .bridge-to-ink { height: 64px; }
+  .bridge-dawn { height: 90px; }
+  .bridge-to-navy { height: 72px; }
+}
+
+/* Facho de luz azul-marinho — mesmo tom da luz de recorte na foto de
+   referência (~#2E3F63), não mais um branco-frio genérico. */
+.harsh-light {
+  position: absolute;
+  background: radial-gradient(ellipse at center, rgba(46, 63, 99, 0.45) 0%, rgba(46, 63, 99, 0) 65%);
+  pointer-events: none;
+}
+
+/* ===================== HERO (composição editorial premium) =====================
+   Mobile (< 1024px): pilha vertical — painel de texto sólido no topo, foto
+   numa faixa de aspect-ratio controlado abaixo (não é background full-bleed).
+   Desktop (>= 1024px): grid assimétrico 46/54 — texto à esquerda, foto à
+   direita com blend suave na emenda (sem "recorte colado"). */
+.hero { position: relative; background: var(--v4-ink); }
+
+.hero-grid { display: block; }
+@media (min-width: 1280px) {
+  .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 46fr) minmax(0, 54fr);
+    align-items: stretch;
+    min-height: clamp(760px, 88vh, 900px);
+  }
+}
+
+.hero-panel {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Faixa de imagem: aspect-ratio no mobile evita altura fixa/100vh e CLS. */
+.hero-media {
+  position: relative;
+  z-index: 1;
+  aspect-ratio: 941 / 1030;
+  background: var(--v4-ink);
+}
+/* Tablet/desktop-estreito empilhado (700–1279px): retrato centralizado, para
+   não virar uma faixa altíssima em largura total. Fundo escuro = moldura. */
+@media (min-width: 700px) and (max-width: 1279px) {
+  .hero-media { max-width: 540px; margin-inline: auto; }
+}
+@media (min-width: 1280px) { .hero-media { aspect-ratio: auto; height: 100%; max-width: none; } }
+.hero-media picture { display: block; width: 100%; height: 100%; }
+/* object-position 80% protege o nome na touca (lado direito da foto) quando a
+   coluna fica mais estreita/vertical e o object-cover apara na horizontal. No
+   mobile a razão do container casa com a da foto retrato → sem aparo. */
+.hero-media img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 80% center; }
+/* < 1280px sempre usa a foto retrato num container de mesma razão → sem aparo,
+   object-position irrelevante. 80% só atua no crop desktop (>= 1280px). */
+
+/* Blend da foto na emenda com o painel — mesma cor do painel na borda, some
+   suave rumo à foto (que é ~#01040B, ligeiramente mais escura). Sem seam. */
+.hero-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  /* mobile: some no topo, para o texto do painel */
+  background: linear-gradient(180deg, var(--v4-ink) 0%, rgba(7,12,22,0.5) 8%, rgba(7,12,22,0) 20%);
+}
+@media (min-width: 1024px) {
+  .hero-media::after {
+    /* desktop: some na borda esquerda (para o painel) + leve base */
+    background:
+      linear-gradient(90deg, var(--v4-ink) 0%, rgba(7,12,22,0.5) 11%, rgba(7,12,22,0) 30%),
+      linear-gradient(0deg, rgba(7,12,22,0.4) 0%, rgba(7,12,22,0) 22%);
+  }
+}
+
+/* Selo/eyebrow do hero — dourado só num traço fino (dourado discreto). */
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--v4-text-muted);
+}
+.hero-eyebrow::before {
+  content: "";
+  width: 26px;
+  height: 1px;
+  background: var(--v4-gold);
+  flex: none;
+}
+
+/* Chip de logística (data · horário · formato) */
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 1.1rem;
+  color: var(--v4-text);
+}
+.hero-meta .hero-meta-item { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 14px; }
+.hero-meta .hero-meta-item svg { color: var(--v4-gold); }
+.hero-meta .hero-meta-sep { width: 1px; height: 14px; background: rgba(255,255,255,0.14); }
+
+/* Placa de identidade sobre a foto (desktop) — vidro discreto, canto inferior. */
+.hero-nameplate {
+  position: absolute;
+  z-index: 3;
+  left: 1.5rem;
+  bottom: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.65rem 1rem;
+  border-radius: 0.85rem;
+  background: rgba(5, 8, 15, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+}
+
+/* Pista de scroll no rodapé do hero — convite discreto pra continuar. */
+.scroll-cue-chevron { animation: scroll-cue-bounce 1.8s ease-in-out infinite; }
+@keyframes scroll-cue-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(3px); }
+}
+
+/* Reveal: GSAP assume quando disponível; este é o estado base + fallback. */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* O herói nunca espera animação (regra CRO: LCP instantâneo). */
+.no-defer {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+}
+
+.text-gold { color: var(--v4-gold); }
+
+/* Flicker do headline — 1 ciclo sutil a cada 7s, não cansa a leitura. */
+.flicker-text { animation: flicker 7s infinite; }
+@keyframes flicker {
+  0%, 94%, 100% { opacity: 1; }
+  95% { opacity: 0.55; }
+  96% { opacity: 1; }
+  97.5% { opacity: 0.7; }
+  98.5% { opacity: 1; }
+}
+
+/* Countdown */
+.count-chip {
+  background: rgba(201, 166, 103, 0.08);
+  border: 1px solid rgba(201, 166, 103, 0.25);
+  border-radius: 10px;
+}
+.count-num {
+  font-variant-numeric: tabular-nums;
+  color: var(--v4-text);
+}
+
+/* Botão CTA — o único elemento supersaturado da página. */
+.cta-btn {
+  background: var(--v4-green);
+  color: #FFFFFF;
+  box-shadow: 0 8px 28px rgba(37, 211, 102, 0.28), inset 0 1px 0 rgba(255,255,255,0.18);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+.cta-btn:hover {
+  background: var(--v4-green-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 36px rgba(37, 211, 102, 0.38), inset 0 1px 0 rgba(255,255,255,0.18);
+}
+
+/* Sticky CTA mobile (dados: +15-25% em páginas longas) */
+.sticky-cta {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 60;
+  background: rgba(11, 15, 23, 0.92);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(201, 166, 103, 0.25);
+  transform: translateY(110%);
+  transition: transform 0.35s ease;
+}
+.sticky-cta.is-on { transform: translateY(0); }
+
+/* Mockup de celular (Tela 2) */
+.phone-frame {
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: linear-gradient(180deg, #0A0D14 0%, #070A10 100%);
+  border-radius: 30px;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+.chat-bubble-out {
+  background: #005C4B;
+  color: #E9EDEB;
+  border-radius: 12px 12px 3px 12px;
+}
+.float-notif { animation: float-notif 3s ease-in-out infinite; }
+@keyframes float-notif {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+
+/* Relógio da Tela 3 */
+.clock-hand { transform-origin: 50% 50%; }
+.clock-hand-min { animation: clock-spin 4s linear infinite; }
+.clock-hand-hour { animation: clock-spin 12s linear infinite; }
+@keyframes clock-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* FAQ accordion — altura via grid (robusto para qualquer tamanho de texto) */
+.faq-panel-wrap {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s ease;
+}
+.faq-panel-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+[data-faq-item].is-open .faq-panel-wrap { grid-template-rows: 1fr; }
+[data-faq-item].is-open .faq-chevron { transform: rotate(180deg); }
+.faq-chevron { transition: transform 0.3s ease; }
+
+@media (prefers-reduced-motion: reduce) {
+  .flicker-text, .float-notif, .clock-hand-min, .clock-hand-hour, .scroll-cue-chevron { animation: none; }
+  .faq-panel-wrap, .sticky-cta, .cta-btn { transition: none; }
+}
+
+::selection {
+  background: var(--v4-gold);
+  color: var(--v4-ink);
+}

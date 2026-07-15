@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#0B0F17"/>
+  <rect x="2" y="2" width="1196" height="626" fill="none" stroke="#C9A667" stroke-opacity="0.35" stroke-width="2"/>
+  <path d="M60,520 L200,520 L215,495 L230,520 L245,545 L255,455 L265,565 L280,520 L360,512 L520,520 L560,520 L572,505 L584,520 L592,532 L600,480 L608,540 L620,520 L720,516 L900,520 L1140,520" fill="none" stroke="#8CE9C4" stroke-opacity="0.4" stroke-width="2.5"/>
+  <text x="80" y="150" font-family="Arial, sans-serif" font-size="24" letter-spacing="5" fill="#C9A667">AULA AO VIVO · 06 DE AGOSTO · 20H · GRATUITA</text>
+  <text x="76" y="255" font-family="Georgia, serif" font-weight="600" font-size="62" fill="#EDEFF4">Uma hora a sua paixão pela</text>
+  <text x="76" y="330" font-family="Georgia, serif" font-weight="600" font-size="62" fill="#EDEFF4">medicina vai acabar.</text>
+  <text x="76" y="400" font-family="Georgia, serif" font-style="italic" font-size="44" fill="#C9A667">E ninguém te avisou disso.</text>
+  <text x="80" y="585" font-family="Arial, sans-serif" font-size="24" fill="#9CA8BA">Dr. Iago Ferreira Carega · Dr. Hair — exclusivo para médicos</text>
+</svg>

@@ -35,17 +35,19 @@ function icon(name, cls) {
   return `<span class="${cls || "w-5 h-5"} inline-block" aria-hidden="true">${ICONS[name] || ""}</span>`;
 }
 
-function ctaButton(text, extraClass) {
+function ctaButton(text, extraClass, padYOverride) {
+  const style = padYOverride ? ` style="padding-top:${padYOverride};padding-bottom:${padYOverride};"` : "";
   return `
-    <a href="${content.ctaHref}" target="_blank" rel="noopener noreferrer"
-      class="cta-btn group inline-flex items-center justify-center px-7 py-4 md:px-9 rounded-xl font-sans font-bold text-[13px] md:text-[15px] tracking-wide uppercase ${extraClass || ""}">
+    <a href="${content.ctaHref}" target="_blank" rel="noopener noreferrer"${style}
+      class="cta-btn group inline-flex items-center justify-center px-7 ${padYOverride ? "" : "py-4"} md:px-9 rounded-xl font-sans font-bold text-[13px] md:text-[15px] tracking-wide uppercase ${extraClass || ""}">
       ${WHATSAPP_ICON}${text}
     </a>
   `;
 }
 
-function trustLine(cls) {
-  return `<p class="text-[11px] md:text-xs ${cls || "text-v4-muted"} tracking-wide mt-3">${content.trustLine}</p>`;
+function trustLine(cls, marginTopOverride) {
+  const style = marginTopOverride ? ` style="margin-top:${marginTopOverride};"` : "";
+  return `<p class="text-[11px] md:text-xs ${cls || "text-v4-muted"} tracking-wide ${marginTopOverride ? "" : "mt-3"}"${style}>${content.trustLine}</p>`;
 }
 
 function countdown(idPrefix, compact) {
@@ -74,26 +76,31 @@ function renderSection1() {
   return el(`
     <header class="hero bg-v4-ink" aria-label="Além dos Plantões — aula ao vivo para médicos">
 
-      <!-- Faixa de topo: identifica o público antes de qualquer coisa -->
-      <div class="no-defer relative z-20 px-5 sm:px-8 lg:px-12 xl:px-16 pt-4 pb-3 md:pt-6">
+      <!-- Faixa de topo: só no desktop/tablet. No mobile o selo vira parte da foto (ver abaixo). -->
+      <div class="no-defer hidden md:block relative z-20 px-5 sm:px-8 lg:px-12 xl:px-16 pt-4 pb-3 md:pt-6">
         <p class="hero-eyebrow !text-[10px] md:!text-[11px]">${event.audienceLabel}</p>
       </div>
 
-      <!-- FOTO MOBILE — min-h 260px deixa encolher no iPhone SE (320x568) -->
-      <div class="md:hidden relative w-full h-[45vh] min-h-[260px] overflow-hidden">
+      <!-- FOTO MOBILE — altura em clamp(vh): encolhe suavemente em telas curtas
+           (barra de navegador real come espaço) sem quebrar em telas altas. -->
+      <div class="md:hidden relative w-full overflow-hidden" style="height:clamp(180px,40vh,340px);">
         <picture>
           <source srcset="${sp.heroPhotoMobile}.webp" type="image/webp" />
           <img src="${sp.heroPhotoMobile}.jpg" fetchpriority="high" decoding="async"
-            class="w-full h-full object-cover object-top"
+            class="w-full h-full object-cover"
+            style="object-position:center 78%;"
             alt="${sp.name}, especialista em restauração capilar" />
         </picture>
         <!-- Sombra só na faixa final (blend com o painel) — não cobre mais o rosto -->
         <div class="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-v4-ink to-transparent pointer-events-none"></div>
 
+        <!-- Selo "Exclusivo para médicos" sobreposto no topo da própria foto -->
+        <p class="no-defer hero-eyebrow !text-[10px] absolute left-5 z-10" style="top:clamp(10px,2vh,20px);">${event.audienceLabel}</p>
+
         <!-- Headline ocupa a faixa vazia à esquerda da foto (sem invadir o rosto), letra maior -->
         <h1 class="no-defer absolute inset-y-0 left-0 z-10 flex items-center
           font-display font-bold text-v4-text pl-5 pr-2"
-          style="font-size:clamp(24px,7.6vw,32px);line-height:1.08;letter-spacing:-0.015em;max-width:48%;text-shadow:0 2px 14px rgba(0,0,0,.65);">
+          style="font-size:clamp(22px,7.2vw,32px);line-height:1.08;letter-spacing:-0.015em;max-width:48%;text-shadow:0 2px 14px rgba(0,0,0,.65);">
           ${section1.headline.split("\n").join("<br />")}
         </h1>
       </div>
@@ -101,31 +108,34 @@ function renderSection1() {
       <div class="hero-grid max-w-[1440px] mx-auto relative">
 
         <!-- PAINEL DE TEXTO — no mobile o h1 já está sobre a foto, então o
-             painel só respira normalmente a partir daqui (sem overlap). -->
-        <div class="hero-panel px-5 sm:px-8 lg:px-12 xl:px-16 pt-7 pb-10 md:pt-6 md:pb-10 lg:pt-8 lg:pb-16 relative z-20">
+             painel só respira normalmente a partir daqui (sem overlap). Espaços
+             em clamp(vh) para comprimir suavemente em telas curtas. -->
+        <div class="hero-panel px-5 sm:px-8 lg:px-12 xl:px-16 md:pt-6 md:pb-10 lg:pt-8 lg:pb-16 relative z-20"
+          style="padding-top:clamp(10px,3vh,28px);padding-bottom:clamp(16px,4vh,40px);">
           <h1 class="no-defer hidden md:block font-display font-semibold text-v4-text mb-3 md:mb-5"
             style="font-size:clamp(26px,7vw,52px);line-height:1.08;letter-spacing:-0.02em;">
             ${section1.headline.split("\n").join("<br />")}
           </h1>
 
-          <p class="no-defer font-display text-[16px] sm:text-[17px] lg:text-[20px] leading-[1.4] text-v4-muted mb-6 max-w-lg">
+          <p class="no-defer font-display text-[16px] sm:text-[17px] lg:text-[20px] leading-[1.4] text-v4-muted max-w-lg"
+            style="margin-bottom:clamp(8px,2.5vh,24px);">
             ${section1.subtitle} <span class="text-gold">${section1.subtitleAccent}</span>
           </p>
 
           <p class="no-defer hidden lg:block text-v4-muted text-[15px] leading-relaxed mb-7 max-w-lg">${section1.subheadline}</p>
 
-          <div class="no-defer hero-meta mb-6">
+          <div class="no-defer hero-meta" style="margin-bottom:clamp(8px,2.5vh,24px);">
             <span class="hero-meta-item">${icon("calendar", "w-[16px] h-[16px]")}<span class="text-[13px] md:text-sm">${event.dateLong} · ${event.time}</span></span>
             <span class="hero-meta-sep hidden sm:block"></span>
             <span class="hero-meta-item">${icon("screen", "w-[16px] h-[16px]")}<span class="text-[13px] md:text-sm">${event.format}</span></span>
           </div>
 
           <!-- Countdown mobile: compacto, ID próprio (o JS varre [data-countdown]) -->
-          <div class="no-defer mb-6 md:hidden">${countdown("cd-hero-mob", true)}</div>
+          <div class="no-defer md:hidden" style="margin-bottom:clamp(8px,2.5vh,24px);">${countdown("cd-hero-mob", true)}</div>
 
           <div class="no-defer flex flex-col items-stretch sm:items-start">
-            ${ctaButton(section1.ctaText, "w-full sm:w-auto !py-4 !text-[14px] md:!text-[15px]")}
-            ${trustLine("text-v4-muted !mt-3")}
+            ${ctaButton(section1.ctaText, "w-full sm:w-auto !text-[14px] md:!text-[15px]", "clamp(10px,1.8vh,16px)")}
+            ${trustLine("text-v4-muted", "clamp(6px,1vh,12px)")}
           </div>
 
           <div class="no-defer mt-8 hidden md:block">${countdown("cd-hero-desk", false)}</div>
@@ -161,12 +171,12 @@ function renderSection2() {
       <div class="max-w-5xl mx-auto relative z-10">
         <div class="grid md:grid-cols-2 gap-10 md:gap-14 items-center">
           <div>
-            <h2 class="reveal font-display font-semibold text-[26px] md:text-[38px] leading-[1.18] text-v4-text mb-6">“${section2.headline}”</h2>
+            <h2 class="reveal font-display font-semibold leading-[1.18] text-v4-text mb-6" style="font-size:clamp(26px,3.05vw + 14.6px,38px);">“${section2.headline}”</h2>
             <p class="reveal text-v4-muted leading-relaxed mb-5">${section2.intro}</p>
             <p class="reveal text-v4-muted leading-relaxed">${section2.body}</p>
           </div>
           <div class="reveal flex justify-center">
-            <div class="phone-frame w-64 p-5">
+            <div class="phone-frame p-5" style="width:clamp(200px,11.97vw + 164px,256px);">
               <div class="flex items-center gap-2 pb-3 mb-3 border-b border-white/5">
                 <span class="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-[10px] font-bold text-v4-text">F</span>
                 <div>
@@ -209,10 +219,10 @@ function renderSection3() {
             <circle cx="50" cy="50" r="2.5" fill="#C9A667"></circle>
           </svg>
         </div>
-        <h2 class="reveal font-display font-semibold text-[26px] md:text-[40px] leading-[1.15] text-v4-text mb-6 text-balance">${section3.headline}</h2>
+        <h2 class="reveal font-display font-semibold leading-[1.15] text-v4-text mb-6 text-balance" style="font-size:clamp(26px,3.56vw + 12.6px,40px);">${section3.headline}</h2>
         <p class="reveal text-v4-muted leading-relaxed max-w-xl mx-auto mb-10">${section3.body}</p>
         <blockquote class="reveal border-l-2 border-v4-gold pl-5 md:pl-6 text-left max-w-xl mx-auto mb-8">
-          <p class="font-display italic text-xl md:text-[28px] leading-[1.35] text-v4-text">“${section3.quote}”</p>
+          <p class="font-display italic leading-[1.35] text-v4-text" style="font-size:clamp(20px,2.04vw + 12.4px,28px);">“${section3.quote}”</p>
         </blockquote>
         <p class="reveal text-v4-muted italic mb-12">${section3.closing}</p>
 
@@ -232,13 +242,13 @@ function renderSection4() {
   return el(`
     <section class="relative bg-v4-paper pt-6 pb-10 md:pt-10 md:pb-14 px-6 md:px-8" aria-label="O ponto de virada">
       <div class="max-w-3xl mx-auto text-center">
-        <h2 class="reveal font-display font-semibold text-[26px] md:text-[40px] leading-[1.15] text-v4-navy mb-6 text-balance">${section4.headline}</h2>
+        <h2 class="reveal font-display font-semibold leading-[1.15] text-v4-navy mb-6 text-balance" style="font-size:clamp(26px,3.56vw + 12.6px,40px);">${section4.headline}</h2>
         <p class="reveal text-v4-paper-muted leading-relaxed max-w-xl mx-auto">${section4.body}</p>
       </div>
 
       <article class="reveal max-w-3xl mx-auto mt-12 bg-white rounded-3xl border border-v4-navy/10 shadow-xl p-7 md:p-10">
         <div class="flex flex-col md:flex-row gap-7 md:gap-8 items-center md:items-start">
-          <picture class="w-40 sm:w-44 md:w-48 aspect-[2/3] rounded-2xl overflow-hidden border border-v4-navy/15 shrink-0 block">
+          <picture class="aspect-[2/3] rounded-2xl overflow-hidden border border-v4-navy/15 shrink-0 block" style="width:clamp(160px,8.14vw + 129.5px,192px);">
             <source srcset="${section4.authority.photo}.webp" type="image/webp" />
             <img src="${section4.authority.photo}.jpg" alt="${section4.authority.name}" loading="lazy" decoding="async"
               class="w-full h-full object-cover object-top" />
@@ -274,7 +284,7 @@ function renderAudienceFit() {
   return el(`
     <section class="bg-v4-paper pt-14 pb-14 md:pt-20 md:pb-20 px-6 md:px-8" aria-label="Para quem é esta aula">
       <div class="max-w-5xl mx-auto">
-        <h2 class="reveal font-display font-semibold text-[24px] md:text-[32px] leading-[1.2] text-v4-navy text-center mb-10 max-w-2xl mx-auto text-balance">${audienceFit.title}</h2>
+        <h2 class="reveal font-display font-semibold leading-[1.2] text-v4-navy text-center mb-10 max-w-2xl mx-auto text-balance" style="font-size:clamp(24px,2.04vw + 16.4px,32px);">${audienceFit.title}</h2>
         <div class="grid md:grid-cols-3 gap-5 md:gap-6">${cards}</div>
       </div>
     </section>
@@ -311,7 +321,7 @@ function renderSection5() {
   return el(`
     <section class="bg-v4-paper py-14 md:py-20 px-6 md:px-8" aria-label="A nova realidade e detalhes da aula">
       <div class="max-w-5xl mx-auto">
-        <h2 class="reveal font-display font-semibold text-[26px] md:text-[38px] leading-[1.15] text-v4-navy text-center mb-10 text-balance">${section5.title}</h2>
+        <h2 class="reveal font-display font-semibold leading-[1.15] text-v4-navy text-center mb-10 text-balance" style="font-size:clamp(26px,3.05vw + 14.6px,38px);">${section5.title}</h2>
         <div class="grid md:grid-cols-3 gap-5 md:gap-6 mb-14">${pillars}</div>
 
         <div class="reveal rounded-3xl bg-v4-navy text-white p-7 md:p-10 shadow-2xl overflow-hidden relative">
@@ -361,7 +371,7 @@ function renderSection6() {
           <span class="inline-flex rounded-full h-2 w-2 bg-v4-green shrink-0"></span>
           <p class="font-bold text-v4-gold tracking-[0.2em] uppercase text-xs md:text-sm">${section6.eyebrow}</p>
         </div>
-        <h2 class="reveal font-display font-semibold text-[28px] md:text-[42px] text-white mb-5 leading-[1.12] text-balance">${section6.headline}</h2>
+        <h2 class="reveal font-display font-semibold text-white mb-5 leading-[1.12] text-balance" style="font-size:clamp(28px,3.56vw + 14.6px,42px);">${section6.headline}</h2>
         <p class="reveal text-white/70 leading-relaxed mb-9 max-w-xl mx-auto">${section6.subtitle}</p>
         <div class="reveal">
           ${ctaButton(section6.ctaText, "w-full sm:w-auto")}
@@ -370,7 +380,7 @@ function renderSection6() {
       </div>
 
       <div class="max-w-2xl mx-auto mt-16 md:mt-20">
-        <h3 class="reveal font-display font-semibold text-xl md:text-2xl text-white mb-2 text-center">${section6.faq.title}</h3>
+        <h3 class="reveal font-display font-semibold text-white mb-2 text-center" style="font-size:clamp(20px,1.02vw + 16.2px,24px);">${section6.faq.title}</h3>
         <div class="reveal">${faqItems}</div>
       </div>
     </section>

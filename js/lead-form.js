@@ -13,15 +13,35 @@
 
   var lf = content.leadForm;
 
-  /* ---------- UTMs capturadas da URL de aterrissagem ---------- */
+  /* ---------- UTMs: captura + persistência first-party ----------
+     Pega da URL de aterrissagem; se a visita tem UTMs, usa e guarda no
+     localStorage (sobrescreve). Sem UTMs na URL (reload, visita direta, link
+     sem params), recupera as da última visita. Assim o utm_source raramente
+     se perde — tudo first-party, sem depender de GA4/pixel. */
+  var UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
+  var UTM_STORE = "vitta_utm";
   var utm = {};
   try {
     var params = new URLSearchParams(location.search);
-    ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"].forEach(function (key) {
+    var fromUrl = {};
+    UTM_KEYS.forEach(function (key) {
       var value = params.get(key);
-      if (value) utm[key] = value;
+      if (value) fromUrl[key] = value.slice(0, 200);
     });
-  } catch (_) { /* URLSearchParams indisponível: segue sem UTMs */ }
+    if (Object.keys(fromUrl).length) {
+      utm = fromUrl;
+      try { localStorage.setItem(UTM_STORE, JSON.stringify(utm)); } catch (_) {}
+    } else {
+      // recupera da última visita, filtrando só as chaves válidas (evita 400
+      // se o localStorage tiver sido adulterado com chaves extras).
+      try {
+        var stored = JSON.parse(localStorage.getItem(UTM_STORE) || "{}") || {};
+        UTM_KEYS.forEach(function (key) {
+          if (stored[key]) utm[key] = String(stored[key]).slice(0, 200);
+        });
+      } catch (_) { utm = {}; }
+    }
+  } catch (_) { /* URLSearchParams/localStorage indisponível: segue sem UTMs */ }
 
   function pushEvent(name) {
     window.dataLayer = window.dataLayer || [];

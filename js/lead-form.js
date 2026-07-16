@@ -47,10 +47,6 @@
     return template.content.firstElementChild;
   };
 
-  var ufOptions = lf.ufOptions
-    .map(function (uf) { return '<option value="' + uf + '">' + uf + "</option>"; })
-    .join("");
-
   function fieldBlock(name, type, extraAttrs) {
     var f = lf.fields[name];
     return (
@@ -77,11 +73,13 @@
                 '<label class="lead-label" for="lead-crm">' + lf.fields.crm.label + ' <span aria-hidden="true">*</span></label>' +
                 '<input class="lead-input" id="lead-crm" name="crm" type="text" placeholder="' + lf.fields.crm.placeholder + '" required inputmode="numeric" maxlength="10" aria-describedby="lead-crm-error" />' +
               "</div>" +
-              '<div>' +
-                '<label class="lead-label" for="lead-uf">' + lf.fields.uf.label + ' <span aria-hidden="true">*</span></label>' +
-                '<select class="lead-input lead-select" id="lead-uf" name="uf" required aria-describedby="lead-uf-error">' +
-                  '<option value="" selected disabled>' + lf.fields.uf.placeholder + "</option>" + ufOptions +
-                "</select>" +
+              '<div class="lead-uf-field">' +
+                '<label class="lead-label" id="lead-uf-label">' + lf.fields.uf.label + ' <span aria-hidden="true">*</span></label>' +
+                '<button type="button" class="lead-input lead-uf-trigger" id="lead-uf-trigger" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="lead-uf-label lead-uf-trigger" aria-describedby="lead-uf-error">' +
+                  '<span class="lead-uf-value" data-empty="true">' + lf.fields.uf.placeholder + "</span>" +
+                  '<svg class="lead-uf-caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>' +
+                "</button>" +
+                '<input type="hidden" id="lead-uf" name="uf" value="" tabindex="-1" />' +
               "</div>" +
             "</div>" +
             '<p class="lead-error" id="lead-crm-error" hidden>' + lf.errors.crm + "</p>" +
@@ -112,6 +110,118 @@
     crmInput.value = crmInput.value.replace(/\D/g, "").slice(0, 10);
   });
 
+  /* ---------- UF: dropdown custom ----------
+     O <select> nativo abria uma lista que cobria o modal (ver print). Esta
+     lista escura é filha do overlay (fora do overflow:auto do card, e fora do
+     transform do card), então não é clipada; abre pra baixo ou pra cima
+     conforme o espaço. Teclado (setas/Enter/Esc/Home/End/type-ahead), touch e
+     ARIA (listbox/option). O valor vai pra um input hidden #lead-uf, então a
+     validação e o envio continuam idênticos. */
+  var ufTrigger = overlay.querySelector("#lead-uf-trigger");
+  var ufValue = ufTrigger.querySelector(".lead-uf-value");
+  var ufHidden = overlay.querySelector("#lead-uf");
+  var ufList = document.createElement("ul");
+  ufList.className = "lead-uf-pop";
+  ufList.setAttribute("role", "listbox");
+  ufList.setAttribute("aria-label", lf.fields.uf.label);
+  ufList.tabIndex = -1;
+  ufList.hidden = true;
+  ufList.innerHTML = lf.ufOptions
+    .map(function (uf) {
+      return '<li class="lead-uf-opt" role="option" data-value="' + uf + '" aria-selected="false">' + uf + "</li>";
+    })
+    .join("");
+  overlay.appendChild(ufList);
+  var ufOpts = Array.prototype.slice.call(ufList.querySelectorAll(".lead-uf-opt"));
+  var ufActive = -1;
+
+  function positionUfList() {
+    var r = ufTrigger.getBoundingClientRect();
+    ufList.style.left = r.left + "px";
+    ufList.style.width = r.width + "px";
+    ufList.style.top = "auto";
+    var listH = Math.min(ufList.scrollHeight, 240);
+    var spaceBelow = window.innerHeight - r.bottom;
+    if (spaceBelow < listH + 12 && r.top > spaceBelow) {
+      ufList.style.top = Math.max(8, r.top - listH - 6) + "px";
+    } else {
+      ufList.style.top = r.bottom + 6 + "px";
+    }
+  }
+  function setUfActive(i) {
+    if (i < 0 || i >= ufOpts.length) return;
+    if (ufActive >= 0 && ufOpts[ufActive]) ufOpts[ufActive].classList.remove("is-active");
+    ufActive = i;
+    ufOpts[i].classList.add("is-active");
+    ufOpts[i].scrollIntoView({ block: "nearest" });
+  }
+  function openUf() {
+    ufList.hidden = false;
+    positionUfList();
+    ufTrigger.setAttribute("aria-expanded", "true");
+    var sel = -1;
+    ufOpts.forEach(function (o, i) { if (o.getAttribute("aria-selected") === "true") sel = i; });
+    setUfActive(sel >= 0 ? sel : 0);
+    ufList.focus();
+    document.addEventListener("click", onUfOutside, true);
+    window.addEventListener("resize", closeUf);
+    modal.addEventListener("scroll", closeUf);
+  }
+  function closeUf() {
+    if (ufList.hidden) return;
+    ufList.hidden = true;
+    ufTrigger.setAttribute("aria-expanded", "false");
+    document.removeEventListener("click", onUfOutside, true);
+    window.removeEventListener("resize", closeUf);
+    modal.removeEventListener("scroll", closeUf);
+  }
+  function onUfOutside(e) {
+    if (ufList.contains(e.target) || ufTrigger.contains(e.target)) return;
+    closeUf();
+  }
+  function selectUf(i) {
+    var opt = ufOpts[i];
+    if (!opt) return;
+    ufOpts.forEach(function (o) { o.setAttribute("aria-selected", "false"); });
+    opt.setAttribute("aria-selected", "true");
+    var v = opt.getAttribute("data-value");
+    ufHidden.value = v;
+    ufValue.textContent = v;
+    ufValue.setAttribute("data-empty", "false");
+    setFieldError("uf", false);
+    closeUf();
+    ufTrigger.focus();
+  }
+  ufTrigger.addEventListener("click", function () {
+    if (ufList.hidden) openUf();
+    else closeUf();
+  });
+  ufTrigger.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowDown" || e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      openUf();
+    }
+  });
+  ufList.addEventListener("click", function (e) {
+    var opt = e.target.closest ? e.target.closest(".lead-uf-opt") : null;
+    if (opt) selectUf(ufOpts.indexOf(opt));
+  });
+  ufList.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowDown") { e.preventDefault(); setUfActive(Math.min(ufActive + 1, ufOpts.length - 1)); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); setUfActive(Math.max(ufActive - 1, 0)); }
+    else if (e.key === "Home") { e.preventDefault(); setUfActive(0); }
+    else if (e.key === "End") { e.preventDefault(); setUfActive(ufOpts.length - 1); }
+    else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); selectUf(ufActive); }
+    else if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); closeUf(); ufTrigger.focus(); }
+    else if (e.key === "Tab") { closeUf(); }
+    else if (/^[a-z]$/i.test(e.key)) {
+      var k = e.key.toLowerCase();
+      var idx = -1;
+      ufOpts.forEach(function (o, i) { if (idx === -1 && o.getAttribute("data-value").charAt(0).toLowerCase() === k) idx = i; });
+      if (idx >= 0) setUfActive(idx);
+    }
+  });
+
   /* ---------- Abrir / fechar ---------- */
   var submitting = false;
   var cancelled = false;
@@ -134,6 +244,7 @@
   }
 
   function closeModal() {
+    closeUf(); // não deixar a lista de UF pendurada ao fechar o modal
     // Fechar durante o envio cancela a navegação pro obrigado — o usuário
     // desistiu; não teletransportar segundos depois.
     if (submitting) {
@@ -201,7 +312,9 @@
 
   /* ---------- Validação + submit ---------- */
   function setFieldError(name, hasError) {
-    var input = overlay.querySelector("#lead-" + name);
+    var input = name === "uf"
+      ? overlay.querySelector("#lead-uf-trigger")
+      : overlay.querySelector("#lead-" + name);
     var error = overlay.querySelector("#lead-" + name + "-error");
     if (input) input.setAttribute("aria-invalid", hasError ? "true" : "false");
     if (error) error.hidden = !hasError;
@@ -232,7 +345,9 @@
       }
     });
     if (firstBad) {
-      var badInput = overlay.querySelector("#lead-" + firstBad);
+      var badInput = firstBad === "uf"
+        ? overlay.querySelector("#lead-uf-trigger")
+        : overlay.querySelector("#lead-" + firstBad);
       if (badInput) badInput.focus();
     }
     return ok ? values : null;

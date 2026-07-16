@@ -62,8 +62,9 @@ const content = {
   obrigadoPage: {
     title: "Inscrição confirmada | Vitta Academy",
     headline: "Inscrição confirmada!",
-    loadingText: "Te levando pro grupo do WhatsApp...",
-    manualCtaText: "IR PARA O GRUPO AGORA",
+    subline: "Você garantiu sua vaga na aula de 06/08.",
+    loadingText: "Abrindo o grupo do WhatsApp…",
+    manualCtaText: "ENTRAR NO GRUPO AGORA",
     redirectSeconds: 4,
   },
 

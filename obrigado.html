@@ -22,7 +22,10 @@
   <link rel="stylesheet" href="css/styles.css" />
   <style>
     /* Página mínima: sem Tailwind CDN aqui de propósito — carrega mais rápido
-       e o usuário fica ~4s antes do redirect pro grupo. */
+       e o usuário fica ~4s antes do redirect pro grupo. Como não tem o preflight
+       do Tailwind, precisamos do reset de box-sizing na mão, senão o botão
+       (width:100% + padding) estoura pra fora do card. */
+    *, *::before, *::after { box-sizing: border-box; }
     .ob-wrap {
       min-height: 100dvh;
       display: grid;
@@ -40,6 +43,7 @@
       box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
     }
     .ob-check {
+      position: relative;
       width: 56px;
       height: 56px;
       margin: 0 auto 20px;
@@ -62,10 +66,17 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 12px;
+      gap: 8px;
       color: var(--v4-text-muted);
       font-size: 14px;
-      margin-bottom: 28px;
+      margin-bottom: 14px;
+    }
+    .ob-subline {
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--v4-text-muted);
+      margin: 0 auto 20px;
+      max-width: 34ch;
     }
     .ob-manual {
       display: inline-flex;
@@ -80,6 +91,92 @@
       text-transform: uppercase;
       text-decoration: none;
     }
+
+    /* ==================== Motion da confirmação ====================
+       Momento raro (o usuário vê 1x após enviar) → um beat de sucesso
+       caprichado (lentes Jakub polish + Jhey delight), mas honesto: o
+       spinner em loop virou barra determinística que conta os ~4s até o
+       redirect (Emil: motion com propósito). Nada em loop. Só transform/
+       opacity/filter (+ stroke-dashoffset no desenho do check). Tudo
+       desligado em prefers-reduced-motion. */
+    :root { --ob-ease: cubic-bezier(0.16, 1, 0.3, 1); }
+
+    /* card materializa: fade + rise + blur */
+    .ob-card { animation: ob-card-in 0.55s var(--ob-ease) both; }
+    @keyframes ob-card-in {
+      from { opacity: 0; transform: translateY(12px) scale(0.985); filter: blur(6px); }
+      to   { opacity: 1; transform: none; filter: blur(0); }
+    }
+
+    /* check: círculo entra sutil (0.85→1, sem bounce) */
+    .ob-check { animation: ob-check-in 0.5s var(--ob-ease) 0.15s both; }
+    @keyframes ob-check-in {
+      from { opacity: 0; transform: scale(0.85); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    /* anel de sucesso: expande e some UMA vez (delight, não loop) */
+    .ob-check-ring {
+      position: absolute;
+      inset: -5px;
+      border-radius: 50%;
+      border: 2px solid var(--v4-green);
+      opacity: 0;
+      animation: ob-ring 0.7s ease-out 0.3s 1 both;
+    }
+    @keyframes ob-ring {
+      from { opacity: 0.55; transform: scale(0.85); }
+      to   { opacity: 0; transform: scale(1.7); }
+    }
+    /* check se desenha (stroke draw) */
+    .ob-check-path {
+      stroke-dasharray: 26;
+      stroke-dashoffset: 26;
+      animation: ob-draw 0.45s cubic-bezier(0.65, 0, 0.35, 1) 0.38s both;
+    }
+    @keyframes ob-draw { to { stroke-dashoffset: 0; } }
+
+    /* texto/elementos em stagger: fade + rise + blur, fill both (sem piscar) */
+    .ob-headline    { animation: ob-item-in 0.5s var(--ob-ease) 0.42s both; }
+    .ob-subline     { animation: ob-item-in 0.5s var(--ob-ease) 0.52s both; }
+    .ob-loading-row { animation: ob-item-in 0.5s var(--ob-ease) 0.60s both; }
+    .ob-progress    { animation: ob-item-in 0.5s var(--ob-ease) 0.66s both; }
+    .ob-manual      { animation: ob-item-in 0.5s var(--ob-ease) 0.72s both; }
+    @keyframes ob-item-in {
+      from { opacity: 0; transform: translateY(8px); filter: blur(3px); }
+      to   { opacity: 1; transform: none; filter: blur(0); }
+    }
+
+    /* barra determinística: preenche 1x ao longo do redirect (scaleX, GPU) */
+    .ob-progress {
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+    .ob-progress-fill {
+      display: block;
+      height: 100%;
+      width: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--v4-green), #34e07a);
+      transform: scaleX(0);
+      transform-origin: left center;
+      animation: ob-progress var(--ob-redirect, 4000ms) linear both;
+    }
+    @keyframes ob-progress { to { transform: scaleX(1); } }
+
+    @media (prefers-reduced-motion: reduce) {
+      .ob-card, .ob-check, .ob-check-path, .ob-headline, .ob-subline,
+      .ob-loading-row, .ob-progress, .ob-progress-fill, .ob-manual { animation: none; }
+      .ob-card, .ob-check, .ob-headline, .ob-subline, .ob-loading-row, .ob-manual {
+        opacity: 1; transform: none; filter: none;
+      }
+      .ob-check-path { stroke-dashoffset: 0; }
+      .ob-check-ring { display: none; }
+      /* sem contador animado: a barra some, o texto + o redirect já bastam */
+      .ob-progress { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -91,16 +188,20 @@
   <main class="ob-wrap">
     <div class="ob-card">
       <div class="ob-check" aria-hidden="true">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+        <span class="ob-check-ring"></span>
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path class="ob-check-path" d="M20 6L9 17l-5-5"/></svg>
       </div>
       <h1 class="ob-headline" id="ob-headline">Inscrição confirmada!</h1>
+      <p class="ob-subline" id="ob-subline">Você garantiu sua vaga na aula de 06/08.</p>
       <div class="ob-loading-row">
-        <span class="spinner" aria-hidden="true"></span>
-        <span id="ob-loading">Te levando pro grupo do WhatsApp...</span>
+        <span id="ob-loading">Abrindo o grupo do WhatsApp…</span>
       </div>
+      <!-- Barra determinística: preenche ao longo do redirect (obrigado.js
+           seta --ob-redirect com o tempo real). -->
+      <div class="ob-progress" aria-hidden="true"><span class="ob-progress-fill"></span></div>
       <!-- Fallback estático: se content.js/obrigado.js falharem, o botão ainda
            leva ao grupo (obrigado.js sobrescreve a partir de content.ctaHref). -->
-      <a class="cta-btn ob-manual" id="ob-manual" href="https://chat.whatsapp.com/F68R10dSGMe59K0V8mgIkS">IR PARA O GRUPO AGORA</a>
+      <a class="cta-btn ob-manual" id="ob-manual" href="https://chat.whatsapp.com/F68R10dSGMe59K0V8mgIkS">ENTRAR NO GRUPO AGORA</a>
     </div>
   </main>
 

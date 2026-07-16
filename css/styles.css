@@ -364,7 +364,8 @@ body {
   font-size: clamp(18px, 4.8vw, 22px);
   line-height: 1.35;
   color: var(--v4-text);
-  margin: 4px 28px 20px 0;
+  /* margem direita generosa: nunca encostar no botão × (44px + 8px do canto) */
+  margin: 4px 44px 20px 0;
 }
 
 .lead-field + .lead-field { margin-top: 14px; }
@@ -402,11 +403,60 @@ body {
   -webkit-text-fill-color: var(--v4-text);
 }
 
-.lead-select { appearance: auto; }
+/* UF: dropdown custom (troca o <select> nativo, cujo popup cobria o card).
+   A lista é filha do overlay (fora do overflow/transform do card) e é
+   posicionada por JS via position:absolute em coords do viewport. */
+.lead-uf-field { position: relative; }
+.lead-uf-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+}
+.lead-uf-value { color: var(--v4-text); }
+.lead-uf-value[data-empty="true"] { color: rgba(156, 168, 186, 0.75); }
+.lead-uf-caret {
+  flex: none;
+  color: var(--v4-text-muted);
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.lead-uf-trigger[aria-expanded="true"] .lead-uf-caret { transform: rotate(180deg); }
+
+.lead-uf-pop {
+  position: absolute; /* filho do overlay (fixed, inset:0) → left/top = viewport */
+  z-index: 2;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  max-height: 240px;
+  overflow-y: auto;
+  background: var(--v4-ink-2);
+  border: 1px solid rgba(201, 166, 103, 0.28);
+  border-radius: 12px;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.55);
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+.lead-uf-opt {
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 15px;
+  line-height: 1.2;
+  color: var(--v4-text);
+  cursor: pointer;
+}
+.lead-uf-opt.is-active { background: rgba(201, 166, 103, 0.16); }
+.lead-uf-opt[aria-selected="true"] { color: var(--v4-gold); font-weight: 600; }
+@media (hover: hover) {
+  .lead-uf-opt:hover { background: rgba(255, 255, 255, 0.06); }
+}
 
 .lead-crm-row {
   display: grid;
-  grid-template-columns: 1fr 92px;
+  grid-template-columns: 1fr 104px;
   gap: 12px;
 }
 
@@ -463,7 +513,7 @@ html.modal-open, .modal-open body { overflow: hidden; }
 
 @media (prefers-reduced-motion: reduce) {
   .flicker-text, .float-notif, .clock-hand-min, .clock-hand-hour, .scroll-cue-chevron { animation: none; }
-  .faq-panel-wrap, .sticky-cta, .cta-btn { transition: none; }
+  .faq-panel-wrap, .sticky-cta, .cta-btn, .lead-uf-caret { transition: none; }
   .lead-modal-overlay, .lead-modal { transition: none; transform: none; }
   /* Arco estático parece quebrado; o texto ao lado já comunica o estado. */
   .spinner { display: none; }

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-THZMQD5Z');</script>
+  <!-- End Google Tag Manager -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+
+  <title>Inscrição confirmada | Vitta Academy</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    /* Página mínima: sem Tailwind CDN aqui de propósito — carrega mais rápido
+       e o usuário fica ~4s antes do redirect pro grupo. */
+    .ob-wrap {
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+    .ob-card {
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+      background: linear-gradient(180deg, var(--v4-ink-2) 0%, var(--v4-plum) 100%);
+      border: 1px solid rgba(201, 166, 103, 0.28);
+      border-radius: 18px;
+      padding: 40px 28px;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
+    }
+    .ob-check {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: rgba(37, 211, 102, 0.12);
+      border: 1.5px solid rgba(37, 211, 102, 0.45);
+      color: var(--v4-green);
+    }
+    .ob-headline {
+      font-family: "Fraunces", Georgia, serif;
+      font-weight: 600;
+      font-size: 26px;
+      line-height: 1.2;
+      color: var(--v4-text);
+      margin-bottom: 14px;
+    }
+    .ob-loading-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: var(--v4-text-muted);
+      font-size: 14px;
+      margin-bottom: 28px;
+    }
+    .ob-manual {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 15px 24px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-THZMQD5Z"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <main class="ob-wrap">
+    <div class="ob-card">
+      <div class="ob-check" aria-hidden="true">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+      <h1 class="ob-headline" id="ob-headline">Inscrição confirmada!</h1>
+      <div class="ob-loading-row">
+        <span class="spinner" aria-hidden="true"></span>
+        <span id="ob-loading">Te levando pro grupo do WhatsApp...</span>
+      </div>
+      <!-- Fallback estático: se content.js/obrigado.js falharem, o botão ainda
+           leva ao grupo (obrigado.js sobrescreve a partir de content.ctaHref). -->
+      <a class="cta-btn ob-manual" id="ob-manual" href="https://chat.whatsapp.com/F68R10dSGMe59K0V8mgIkS">IR PARA O GRUPO AGORA</a>
+    </div>
+  </main>
+
+  <script src="content/content.js" defer></script>
+  <script src="js/obrigado.js" defer></script>
+</body>
+</html>

@@ -23,6 +23,50 @@ const content = {
   ctaHref: "https://chat.whatsapp.com/F68R10dSGMe59K0V8mgIkS",
   countdownTarget: "2026-08-06T20:00:00-03:00",
 
+  // Endpoint de captura de leads (backend do bot no Railway, rota POST /lead).
+  // O funil NUNCA bloqueia no backend: timeout curto e segue pro obrigado.
+  leadApi: {
+    endpoint: "https://backend-production-48a9.up.railway.app/lead",
+    timeoutMs: 4000,
+  },
+
+  // Modal de cadastro que intercepta os CTAs antes do grupo (foto de
+  // referência da equipe, 15/07: card creme com NOME/E-MAIL/TELEFONE/CRM+UF).
+  leadForm: {
+    heading: "Preencha para continuar e conhecer todas as informações da aula gratuita.",
+    fields: {
+      nome: { label: "Nome", placeholder: "Seu nome completo" },
+      email: { label: "E-mail", placeholder: "seu@email.com" },
+      telefone: { label: "Telefone", placeholder: "(00) 00000-0000" },
+      crm: { label: "CRM", placeholder: "Número" },
+      uf: { label: "UF", placeholder: "UF" },
+    },
+    ufOptions: [
+      "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG",
+      "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO",
+    ],
+    submitText: "QUERO ENTRAR NO GRUPO",
+    submittingText: "ENVIANDO...",
+    closeLabel: "Fechar",
+    privacyNote: "Seus dados são usados apenas para os avisos da aula. Nada de spam.",
+    errors: {
+      nome: "Digite seu nome completo.",
+      email: "Digite um e-mail válido.",
+      telefone: "Digite um telefone válido com DDD.",
+      crm: "Digite o número do seu CRM.",
+      uf: "Selecione a UF.",
+    },
+  },
+
+  // Página de obrigado (obrigado.html): confirma e redireciona pro grupo.
+  obrigadoPage: {
+    title: "Inscrição confirmada | Vitta Academy",
+    headline: "Inscrição confirmada!",
+    loadingText: "Te levando pro grupo do WhatsApp...",
+    manualCtaText: "IR PARA O GRUPO AGORA",
+    redirectSeconds: 4,
+  },
+
   event: {
     dateShort: "06/08",
     dateLong: "06 de agosto",

@@ -11,6 +11,7 @@ const hasGsap = typeof gsap !== "undefined" && typeof ScrollTrigger !== "undefin
 function initLenis() {
   if (reducedMotion || typeof Lenis === "undefined") return;
   const lenis = new Lenis({ lerp: 0.11, wheelMultiplier: 1 });
+  window.lenisInstance = lenis; // lead-form.js pausa/retoma o scroll no modal
   function raf(time) {
     lenis.raf(time);
     requestAnimationFrame(raf);

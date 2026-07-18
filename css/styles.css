@@ -448,6 +448,7 @@ html.js-anim .reveal.is-visible {
   box-shadow: 0 18px 44px rgba(0, 0, 0, 0.55);
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
+  touch-action: pan-y; /* rolagem no dedo sempre permitida dentro da lista */
 }
 .lead-uf-opt {
   padding: 10px 12px;

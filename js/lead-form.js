@@ -142,6 +142,9 @@
   var ufHidden = overlay.querySelector("#lead-uf");
   var ufList = document.createElement("ul");
   ufList.className = "lead-uf-pop";
+  // A lista vive no overlay (fora do card) — sem isto o Lenis, pausado com o
+  // modal aberto, engole o touchmove e a lista não rola no dedo.
+  ufList.setAttribute("data-lenis-prevent", "");
   ufList.setAttribute("role", "listbox");
   ufList.setAttribute("aria-label", lf.fields.uf.label);
   ufList.tabIndex = -1;

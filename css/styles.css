@@ -196,13 +196,16 @@ body {
   50% { transform: translateY(3px); }
 }
 
-/* Reveal: GSAP assume quando disponível; este é o estado base + fallback. */
-.reveal {
+/* Reveal: visível por padrão (PageSpeed: conteúdo nunca fica refém do JS —
+   sem gate, FCP/SI pintam tudo). O animations.js adiciona html.js-anim logo
+   antes de animar; só então o estado escondido se aplica, e o GSAP (ou o
+   fallback .is-visible) revela. Sem JS/GSAP → página inteira visível. */
+html.js-anim .reveal {
   opacity: 0;
   transform: translateY(22px);
   transition: opacity 0.4s ease, transform 0.4s ease;
 }
-.reveal.is-visible {
+html.js-anim .reveal.is-visible {
   opacity: 1;
   transform: translateY(0);
 }
@@ -213,7 +216,7 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .reveal { opacity: 1; transform: none; transition: none; }
+  .reveal, html.js-anim .reveal { opacity: 1; transform: none; transition: none; }
 }
 
 .text-gold { color: var(--v4-gold); }

@@ -1,12 +1,32 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <!-- Google Tag Manager -->
-  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-  })(window,document,'script','dataLayer','GTM-THZMQD5Z');</script>
+  <!-- Google Tag Manager — ADIADO de propósito (PageSpeed mobile): o dataLayer
+       existe desde já (lead-form.js enfileira eventos), mas o gtm.js (que puxa
+       GA4 + Meta Pixel + CAPI, ~300KB de JS) só carrega na 1ª interação ou
+       ~3,5s após o load, tirando esse peso do caminho crítico. No obrigado.html
+       o GTM continua imediato (página de conversão). -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    (function () {
+      var done = false;
+      var evs = ['pointerdown', 'touchstart', 'keydown', 'scroll'];
+      function loadGTM() {
+        if (done) return;
+        done = true;
+        evs.forEach(function (ev) { window.removeEventListener(ev, loadGTM); });
+        window.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+        var j = document.createElement('script');
+        j.async = true;
+        j.src = 'https://www.googletagmanager.com/gtm.js?id=GTM-THZMQD5Z';
+        document.head.appendChild(j);
+      }
+      evs.forEach(function (ev) {
+        window.addEventListener(ev, loadGTM, { once: true, passive: true });
+      });
+      window.addEventListener('load', function () { setTimeout(loadGTM, 3500); });
+    })();
+  </script>
   <!-- End Google Tag Manager -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -27,39 +47,23 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Fontes sem bloquear o render (PageSpeed): carrega async via media=print
+       +onload; display=swap já está na URL e os fallbacks (Georgia/system-ui)
+       seguram o texto até chegar. -->
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700;800&display=swap" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" /></noscript>
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            "v4-ink": "#070C16",
-            "v4-ink-2": "#0C1220",
-            "v4-ink-3": "#121A2C",
-            "v4-plum": "#0A121F",
-            "v4-glow-blue": "#2E3F63",
-            "v4-text": "#EDEFF4",
-            "v4-muted": "#9CA8BA",
-            "v4-gold": "#C9A667",
-            "v4-gold-soft": "#E4D2A8",
-            "v4-mint": "#8CE9C4",
-            "v4-paper": "#F6F7F9",
-            "v4-paper-muted": "#5B6675",
-            "v4-navy": "#0F172A",
-            "v4-navy-2": "#1E293B",
-            "v4-green": "#25D366",
-          },
-          fontFamily: {
-            display: ["Fraunces", "Georgia", "serif"],
-            sans: ["Inter", "system-ui", "sans-serif"],
-          },
-        },
-      },
-    };
-  </script>
+  <!-- Preload da imagem LCP: o herói só é montado pelo render.js (defer), então
+       sem isto o browser descobre a foto tarde demais (Lighthouse: 710ms de
+       load delay). Media queries batem com o <picture> do render.js. -->
+  <link rel="preload" as="image" href="assets/dr-iago-hero-mobile.webp" media="(max-width: 1279px)" fetchpriority="high" />
+  <link rel="preload" as="image" href="assets/dr-iago-hero.webp" media="(min-width: 1280px)" fetchpriority="high" />
 
+  <!-- Tailwind pré-compilado e purgado (substitui o cdn.tailwindcss.com em
+       runtime — 123KB de JS que bloqueava o render no mobile). Config e
+       rebuild: tailwind.config.js na raiz. -->
+  <link rel="stylesheet" href="css/tailwind.css" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body class="bg-v4-ink text-v4-text font-sans antialiased overflow-x-hidden">
@@ -77,13 +81,16 @@
   <div id="root"></div>
 
   <!-- Scripts clássicos (não type="module") de propósito: funcionam pelo
-       servidor e abrindo o index.html direto (file://). Vendor local, sem CDN. -->
-  <script src="js/vendor/gsap.min.js" defer></script>
-  <script src="js/vendor/ScrollTrigger.min.js" defer></script>
-  <script src="js/vendor/lenis.min.js" defer></script>
+       servidor e abrindo o index.html direto (file://). Vendor local, sem CDN.
+       ORDEM IMPORTA (defer executa em ordem): content+render primeiro pra
+       pintar a página (LCP) antes das libs de animação; animations.js por
+       último acha o DOM pronto. render.js não usa GSAP (verificado). -->
   <script src="content/content.js" defer></script>
   <script src="js/render.js" defer></script>
   <script src="js/lead-form.js" defer></script>
+  <script src="js/vendor/gsap.min.js" defer></script>
+  <script src="js/vendor/ScrollTrigger.min.js" defer></script>
+  <script src="js/vendor/lenis.min.js" defer></script>
   <script src="js/animations.js" defer></script>
 </body>
 </html>

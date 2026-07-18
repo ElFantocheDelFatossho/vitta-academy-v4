@@ -32,6 +32,10 @@ function initReveals() {
     return;
   }
 
+  // O CSS só esconde .reveal sob html.js-anim (conteúdo nunca fica refém do
+  // JS). Marca a classe SÓ agora, quando o reveal vai mesmo acontecer.
+  document.documentElement.classList.add("js-anim");
+
   if (hasGsap) {
     gsap.registerPlugin(ScrollTrigger);
     items.forEach((item) => {

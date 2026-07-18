@@ -85,7 +85,7 @@ function renderSection1() {
            (barra de navegador real come espaço) sem quebrar em telas altas. -->
       <div class="md:hidden relative w-full overflow-hidden" style="height:clamp(180px,40vh,340px);">
         <picture>
-          <source srcset="${sp.heroPhotoMobile}.webp" type="image/webp" />
+          <source srcset="${sp.heroPhotoMobile}-640.webp 640w, ${sp.heroPhotoMobile}.webp 941w" sizes="100vw" type="image/webp" />
           <img src="${sp.heroPhotoMobile}.jpg" fetchpriority="high" decoding="async"
             class="w-full h-full object-cover"
             style="object-position:center 78%;"
@@ -418,8 +418,15 @@ function renderStickyCta() {
 /* pontes de gradiente entre blocos — sem corte seco */
 const bridge = (cls) => el(`<div class="${cls}" aria-hidden="true"></div>`);
 
-root.append(
-  renderSection1(),
+// O #root já vem com o herói ESTÁTICO pré-renderizado no index.html (LCP sem
+// JS). REUSAMOS esse nó em vez de recriá-lo: recriar a <img> geraria uma nova
+// entrada de LCP no momento do takeover, desfazendo o ganho (medido: LCP ia
+// de ~1,5s pra ~3,9s). O fallback renderSection1() cobre o caso de o estático
+// não existir. Se a copy do herói mudar em content.js, regenerar o
+// partials/hero-static.html (instruções no index.html) — o estático manda.
+const staticHero = root.querySelector("header");
+root.replaceChildren(
+  staticHero || renderSection1(),
   bridge("bridge-to-plum"),
   renderSection2(),
   bridge("bridge-to-ink"),

@@ -1,0 +1,114 @@
+<header class="hero bg-v4-ink" aria-label="Além dos Plantões — aula ao vivo para médicos">
+
+      <!-- Faixa de topo: só no desktop/tablet. No mobile o selo vira parte da foto (ver abaixo). -->
+      <div class="no-defer hidden md:block relative z-20 px-5 sm:px-8 lg:px-12 xl:px-16 pt-4 pb-3 md:pt-6">
+        <p class="hero-eyebrow !text-[10px] md:!text-[11px]">Exclusivo para médicos</p>
+      </div>
+
+      <!-- FOTO MOBILE — altura em clamp(vh): encolhe suavemente em telas curtas
+           (barra de navegador real come espaço) sem quebrar em telas altas. -->
+      <div class="md:hidden relative w-full overflow-hidden" style="height:clamp(180px,40vh,340px);">
+        <picture>
+          <source srcset="assets/dr-iago-hero-mobile-640.webp 640w, assets/dr-iago-hero-mobile.webp 941w" sizes="100vw" type="image/webp">
+          <img src="assets/dr-iago-hero-mobile.jpg" fetchpriority="high" decoding="async" class="w-full h-full object-cover" style="object-position:center 78%;" alt="Dr. Iago Ferreira Carega, especialista em restauração capilar">
+        </picture>
+        <!-- Sombra só na faixa final (blend com o painel) — não cobre mais o rosto -->
+        <div class="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-v4-ink to-transparent pointer-events-none"></div>
+
+        <!-- Selo "Exclusivo para médicos" sobreposto no topo da própria foto -->
+        <p class="no-defer hero-eyebrow !text-[10px] absolute left-5 z-10" style="top:clamp(10px,2vh,20px);">Exclusivo para médicos</p>
+
+        <!-- Headline ocupa a faixa vazia à esquerda da foto (sem invadir o rosto), letra maior -->
+        <h1 class="no-defer absolute inset-y-0 left-0 z-10 flex items-center
+          font-display font-bold text-v4-text pl-5 pr-2" style="font-size:clamp(22px,7.2vw,32px);line-height:1.08;letter-spacing:-0.015em;max-width:48%;text-shadow:0 2px 14px rgba(0,0,0,.65);">
+          Quantos plantões<br>faltam para você<br>desistir?
+        </h1>
+      </div>
+
+      <div class="hero-grid max-w-[1440px] mx-auto relative">
+
+        <!-- PAINEL DE TEXTO — no mobile o h1 já está sobre a foto, então o
+             painel só respira normalmente a partir daqui (sem overlap). Espaços
+             em clamp(vh) para comprimir suavemente em telas curtas. -->
+        <div class="hero-panel px-5 sm:px-8 lg:px-12 xl:px-16 md:pt-6 md:pb-10 lg:pt-8 lg:pb-16 relative z-20" style="padding-top:clamp(10px,3vh,28px);padding-bottom:clamp(16px,4vh,40px);">
+          <h1 class="no-defer hidden md:block font-display font-semibold text-v4-text mb-3 md:mb-5" style="font-size:clamp(26px,7vw,52px);line-height:1.08;letter-spacing:-0.02em;">
+            Quantos plantões<br>faltam para você<br>desistir?
+          </h1>
+
+          <p class="no-defer font-display text-[16px] sm:text-[17px] lg:text-[20px] leading-[1.4] text-v4-muted max-w-lg" style="margin-bottom:clamp(8px,2.5vh,24px);">
+            Uma hora a sua paixão platônica pela medicina vai acabar. <span class="text-gold">E ninguém te avisou disso.</span>
+          </p>
+
+          <p class="no-defer hidden lg:block text-v4-muted text-[15px] leading-relaxed mb-7 max-w-lg">Foram 6 anos de faculdade e mais de 3 anos engolindo plantões de 12, 48, até 72 horas — noites sem dormir, corpo no limite, mente sem conseguir raciocinar. Você está pagando um preço alto demais para manter essa renda.</p>
+
+          <div class="no-defer hero-meta" style="margin-bottom:clamp(8px,2.5vh,24px);">
+            <span class="hero-meta-item"><span class="w-[16px] h-[16px] inline-block" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 11h18"></path></svg></span><span class="text-[13px] md:text-sm">06 de agosto · 20h</span></span>
+            <span class="hero-meta-sep hidden sm:block"></span>
+            <span class="hero-meta-item"><span class="w-[16px] h-[16px] inline-block" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"></rect><path d="M8 21h8M12 17v4"></path></svg></span><span class="text-[13px] md:text-sm">Online e ao vivo</span></span>
+          </div>
+
+          <!-- Countdown mobile: compacto, ID próprio (o JS varre [data-countdown]) -->
+          <div class="no-defer md:hidden" style="margin-bottom:clamp(8px,2.5vh,24px);"><div class="flex items-center justify-center gap-1 sm:gap-2 md:gap-3" data-countdown="cd-hero-mob">
+      <div class="count-chip flex flex-col items-center min-w-[40px] sm:min-w-[64px] px-1.5 sm:px-3 py-1.5">
+        <span id="cd-hero-mob-d" class="count-num font-display font-semibold text-lg">19</span>
+        <span class="text-[8px] sm:text-[9px] md:text-[10px] uppercase tracking-[0.1em] sm:tracking-[0.15em] text-v4-muted">dias</span>
+      </div>
+      <div class="count-chip flex flex-col items-center min-w-[40px] sm:min-w-[64px] px-1.5 sm:px-3 py-1.5">
+        <span id="cd-hero-mob-h" class="count-num font-display font-semibold text-lg">00</span>
+        <span class="text-[8px] sm:text-[9px] md:text-[10px] uppercase tracking-[0.1em] sm:tracking-[0.15em] text-v4-muted">horas</span>
+      </div>
+      <div class="count-chip flex flex-col items-center min-w-[40px] sm:min-w-[64px] px-1.5 sm:px-3 py-1.5">
+        <span id="cd-hero-mob-m" class="count-num font-display font-semibold text-lg">10</span>
+        <span class="text-[8px] sm:text-[9px] md:text-[10px] uppercase tracking-[0.1em] sm:tracking-[0.15em] text-v4-muted">min</span>
+      </div>
+      <div class="count-chip flex flex-col items-center min-w-[40px] sm:min-w-[64px] px-1.5 sm:px-3 py-1.5">
+        <span id="cd-hero-mob-s" class="count-num font-display font-semibold text-lg">48</span>
+        <span class="text-[8px] sm:text-[9px] md:text-[10px] uppercase tracking-[0.1em] sm:tracking-[0.15em] text-v4-muted">seg</span>
+      </div></div></div>
+
+          <div class="no-defer flex flex-col items-stretch sm:items-start">
+
+    <a href="https://chat.whatsapp.com/F68R10dSGMe59K0V8mgIkS" target="_blank" rel="noopener noreferrer" style="padding-top:clamp(10px,1.8vh,16px);padding-bottom:clamp(10px,1.8vh,16px);" class="cta-btn group inline-flex items-center justify-center px-7  md:px-9 rounded-xl font-sans font-bold text-[13px] md:text-[15px] tracking-wide uppercase w-full sm:w-auto !text-[14px] md:!text-[15px]">
+      <svg class="w-5 h-5 mr-2.5 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.39 1.26 4.81L2 22l5.41-1.42a9.87 9.87 0 004.63 1.18h.01c5.46 0 9.9-4.45 9.9-9.9 0-2.65-1.03-5.13-2.9-7-1.87-1.87-4.35-2.86-6.99-2.86zm0 18.02h-.01a8.2 8.2 0 01-4.18-1.14l-.3-.18-3.11.82.83-3.03-.2-.31a8.2 8.2 0 01-1.26-4.35c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.83 2.42a8.18 8.18 0 012.42 5.83c0 4.55-3.7 8.18-8.27 8.18zm4.52-6.16c-.25-.12-1.47-.72-1.7-.81-.23-.08-.39-.12-.56.13-.17.25-.64.81-.78.97-.14.17-.29.19-.53.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.39-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.14.16-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.36-.77-1.86-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.23.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.24 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.17-.48-.29z"></path></svg>QUERO SAIR DESSE CICLO EXAUSTIVO
+    </a>
+
+            <p class="text-[11px] md:text-xs text-v4-muted tracking-wide " style="margin-top:clamp(6px,1vh,12px);">Grupo silencioso · Apenas avisos da aula · Saída livre a qualquer momento</p>
+          </div>
+
+          <div class="no-defer mt-8 hidden md:block"><div class="flex items-center justify-center gap-1 sm:gap-2 md:gap-3" data-countdown="cd-hero-desk">
+      <div class="count-chip flex flex-col items-center min-w-[40px] sm:min-w-[64px] px-1.5 sm:px-3 py-1.5 sm:py-2.5">
+        <span id="cd-hero-desk-d" class="count-num font-display font-semibold text-base sm:text-2xl md:text-3xl">19</span>
+        <span class="text-[8px] sm:text-[9px] md:text-[10px] uppercase tracking-[0.1em] sm:tracking-[0.15em] text-v4-muted">dias</span>
+      </div>
+      <div class="count-chip flex flex-col items-center min-w-[40px] sm:min-w-[64px] px-1.5 sm:px-3 py-1.5 sm:py-2.5">
+        <span id="cd-hero-desk-h" class="count-num font-display font-semibold text-base sm:text-2xl md:text-3xl">00</span>
+        <span class="text-[8px] sm:text-[9px] md:text-[10px] uppercase tracking-[0.1em] sm:tracking-[0.15em] text-v4-muted">horas</span>
+      </div>
+      <div class="count-chip flex flex-col items-center min-w-[40px] sm:min-w-[64px] px-1.5 sm:px-3 py-1.5 sm:py-2.5">
+        <span id="cd-hero-desk-m" class="count-num font-display font-semibold text-base sm:text-2xl md:text-3xl">10</span>
+        <span class="text-[8px] sm:text-[9px] md:text-[10px] uppercase tracking-[0.1em] sm:tracking-[0.15em] text-v4-muted">min</span>
+      </div>
+      <div class="count-chip flex flex-col items-center min-w-[40px] sm:min-w-[64px] px-1.5 sm:px-3 py-1.5 sm:py-2.5">
+        <span id="cd-hero-desk-s" class="count-num font-display font-semibold text-base sm:text-2xl md:text-3xl">48</span>
+        <span class="text-[8px] sm:text-[9px] md:text-[10px] uppercase tracking-[0.1em] sm:tracking-[0.15em] text-v4-muted">seg</span>
+      </div></div></div>
+        </div>
+
+        <!-- FOTO (tablet/desktop) -->
+        <div class="hero-media hidden md:block">
+          <picture>
+            <source media="(max-width: 1279px)" srcset="assets/dr-iago-hero-mobile.webp" type="image/webp">
+            <source media="(max-width: 1279px)" srcset="assets/dr-iago-hero-mobile.jpg" type="image/jpeg">
+            <source srcset="assets/dr-iago-hero.webp" type="image/webp">
+            <img src="assets/dr-iago-hero.jpg" width="950" height="900" fetchpriority="high" decoding="async" alt="Dr. Iago Ferreira Carega, especialista em restauração capilar, retratado no consultório e em cirurgia de transplante capilar">
+          </picture>
+          <div class="no-defer hero-nameplate">
+            <span class="w-2 h-2 rounded-full bg-v4-gold shrink-0"></span>
+            <div>
+              <p class="font-display font-semibold text-v4-text text-sm leading-none">Dr. Iago Ferreira Carega</p>
+              <p class="text-[11px] text-v4-gold mt-1 tracking-wide">Dr. Hair · Restauração Capilar</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>

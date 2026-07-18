@@ -328,6 +328,12 @@ html.js-anim .reveal.is-visible {
   transition: opacity 0.2s ease-out;
 }
 .lead-modal-overlay.is-open { opacity: 1; }
+/* CRÍTICO: o display:grid acima vencia o [hidden]{display:none} do preflight
+   do Tailwind (mesma especificidade, e a ordem dos stylesheets mudou quando o
+   Tailwind virou build estático) — o overlay invisível cobria a página e
+   engolia TODOS os cliques reais. Esta regra garante o escondido sempre. */
+.lead-modal-overlay[hidden] { display: none !important; }
+.lead-uf-pop[hidden] { display: none !important; }
 
 .lead-modal {
   position: relative;
